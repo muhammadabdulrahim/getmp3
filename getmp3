@@ -8,7 +8,7 @@ import urllib.request
 import time
 from tqdm import tqdm
 
-DATA_DIRECTORY = "data"
+DATA_DIR = "data"
 
 
 def get_url():
@@ -19,6 +19,8 @@ def get_url():
     if len(sys.argv) <= 1:
         print("Too few arguments. Provide a URL parameter")
         sys.exit()
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
     return sys.argv[1]
 
 
