@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+import os, sys, re
+import subprocess as sp
+import multiprocessing as mp
+import urllib.request
+import time
+from tqdm import tqdm
+
+DATA_DIRECTORY = "data"
+
+def get_url():
+    """Get the URL path from the arguments list, or quit if none provided.
+
+    Returns: URL path as a string
+    """
+    if len(sys.argv) <= 1:
+        print("Too few arguments. Provide a URL parameter")
+        sys.exit()
+    return sys.argv[1]
+
+
+def get_mp3_list(path):
+    """Get all paths to all mp3s from a given URL path.
+
+    Args:
+        path: string URL path to load and scrape for mp3s
+
+    Returns: array of paths, each represented as a string
+    """
+    fp = urllib.request.urlopen(path)
+    _bytes = fp.read()
+    _str = _bytes.decode("utf8")
+    fp.close()
+    return [l.split('#')[0] for l in re.split('[\n "]', _str) if '.mp3' in l]
+
+
+def download_mp3(path):
+    """Download an mp3 from the given path. Saves in DATA_DIRECTORY.
+
+    Args:
+        path: string URL path to the specific mp3 to download.
+    """
+    _filename = path.split('/')[-1]
+    urllib.request.urlretrieve(path, "{}/{}".format(DATA_DIR,_filename))
+
+if __name__ == '__main__':
+    _url = get_url()
+    _list = get_mp3_list(_url)
+    _cpucount = mp.cpu_count()
+    _mp3count = len(_list)
+
+    print("Using {} cores to download {} mp3s...".format(_cpucount,_mp3count))
+    with mp.Pool(_cpucount) as pool:
+        for _ in tqdm(pool.imap_unordered(download_mp3, _list)):
+            total = _mp3count
+        pass
+
