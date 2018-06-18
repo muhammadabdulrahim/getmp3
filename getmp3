@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-import os, sys, re
+import os
+import sys
+import re
 import subprocess as sp
 import multiprocessing as mp
 import urllib.request
@@ -7,6 +9,7 @@ import time
 from tqdm import tqdm
 
 DATA_DIRECTORY = "data"
+
 
 def get_url():
     """Get the URL path from the arguments list, or quit if none provided.
@@ -41,7 +44,8 @@ def download_mp3(path):
         path: string URL path to the specific mp3 to download.
     """
     _filename = path.split('/')[-1]
-    urllib.request.urlretrieve(path, "{}/{}".format(DATA_DIR,_filename))
+    urllib.request.urlretrieve(path, "{}/{}".format(DATA_DIR, _filename))
+
 
 if __name__ == '__main__':
     _url = get_url()
@@ -49,9 +53,8 @@ if __name__ == '__main__':
     _cpucount = mp.cpu_count()
     _mp3count = len(_list)
 
-    print("Using {} cores to download {} mp3s...".format(_cpucount,_mp3count))
+    print("Using {} cores to download {} mp3s...".format(_cpucount, _mp3count))
     with mp.Pool(_cpucount) as pool:
         for _ in tqdm(pool.imap_unordered(download_mp3, _list)):
             total = _mp3count
         pass
-
